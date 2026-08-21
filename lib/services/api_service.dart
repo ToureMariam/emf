@@ -43,8 +43,9 @@ class ApiService {
   static Future<Map<String, dynamic>> getSafeZoneDistance({
     double height = 1.5,
     String loadCondition = 'Maximum-Peak',
+    String modelName = 'Random Forest',
   }) async {
-    final url = Uri.parse('$baseUrl/safe-zone?height=$height&load_condition=$loadCondition');
+    final url = Uri.parse('$baseUrl/safe-zone?height=$height&load_condition=$loadCondition&model_name=$modelName');
     
     final response = await http.get(url).timeout(const Duration(seconds: 20));
 

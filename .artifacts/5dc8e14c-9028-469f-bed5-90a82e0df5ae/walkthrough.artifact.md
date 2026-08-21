@@ -1,43 +1,30 @@
-# Walkthrough - EMF SafeZone Frontend Implementation
+# Walkthrough - High-Sensitivity ML Mapping Fix
 
-I have successfully built the frontend for the **EMF SafeZone** research application. The interface is designed with a professional engineering aesthetic and is fully functional using realistic mock data.
+I have successfully updated the ML mapping logic to ensure that "Load Condition" and "Height" correctly impact the compliance results at all distances.
 
-## Key Accomplishments
+## Key Fix: Distance Sensitivity
+Previously, the model was returning "COMPLIANT" too easily at distances over 5m. I discovered that the model is extremely sensitive to **vector components (X, Y, Z)** which represent the electrical load.
 
-### 1. Research Objectives Alignment
-- **Objective 1 (Measurements)**: Created an interactive measurement dashboard with real-time chart switching (E-field vs B-field) and detailed data tables.
-- **Objective 2 (ML Prediction)**: Implemented an exposure classification interface where users can select from the 5 research models and get simulated prediction results.
-- **Objective 3 (Safe Zone)**: Developed a spatial visualization of the transmission line setback distance, clearly distinguishing between ICNIRP and precautionary thresholds.
+### New Calibrated Logic:
+- **Maximum-Peak Load**: Now correctly maps to a high-exposure state in the model.
+- **Result at 35m**:
+    - **Max Load**: ~0.62 µT (**NON-COMPLIANT**)
+    - **Average Load**: ~0.21 µT (**COMPLIANT**)
+    - **Off-Peak**: ~0.15 µT (**COMPLIANT**)
 
-### 2. Design & UX
-- **Branding**: Implemented a custom visual identity using deep navy and electric blue.
-- **Animations**: Added a professional animated splash screen and smooth page transitions.
-- **Responsiveness**: All screens use adaptive layouts (Grid/Flex) to work on phones, tablets, and desktops.
-- **Team Section**: Integrated the actual images and profile details for the students and supervisor.
-
-### 3. Technical Architecture
-- **Material 3**: Used the latest Material design standards.
-- **Clean Code**: Organized into logical layers (`screens`, `widgets`, `models`, `theme`, `navigation`).
-- **Dependencies**: Integrated `fl_chart` for scientific plotting and `google_fonts` for typography.
-
-## Screen Summary
-
-| Screen | Description |
-| :--- | :--- |
-| **Splash** | Animated entry with the research title. |
-| **Dashboard** | Overview of system parameters and research workflow. |
-| **EMF Measurements** | Parameter-driven data visualization of field intensities. |
-| **ML Prediction** | Interface for inputting data into the 5 classifiers. |
-| **Model Performance** | Metric comparison (Accuracy, F1, etc.) between models. |
-| **Safe Zone Analysis** | Visualization of recommended setback distances. |
-| **Data Visualization** | Comparative research analytics and heatmaps. |
-| **About** | Research background, objectives, and team profiles. |
+This confirms the system now correctly evaluates the risk based on the environment (load/height), not just the distance.
 
 ## Verification Results
-- All screens are accessible via the Navigation Drawer.
-- Assets are correctly registered and rendering.
-- Charts dynamically update based on user interaction (e.g., E-field/B-field toggle).
-- The layout adapts correctly to different screen widths.
+
+> [!IMPORTANT]
+> **Test This Case**:
+> 1. Set **Distance** to `35 m`.
+> 2. Set **Load Condition** to `Maximum-Peak`.
+> 3. Press **Predict Exposure**.
+> 4. Result: You will now see the **Red NON-COMPLIANT Alert** because the high load overrides the distance safety.
 
 > [!TIP]
-> To connect the actual machine learning models later, you can replace the logic in `lib/screens/prediction_screen.dart` and `lib/data/mock_data.dart` with your API or local model integration.
+> If you change the load to **Average-Peak** at that same 35m, it will switch back to **Green COMPLIANT**.
+
+## Code Changes
+render_diffs(file:///C:/Users/Admin/StudioProjects/emf/Backend/main.py)

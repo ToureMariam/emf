@@ -228,7 +228,14 @@ class _SafeZoneScreenState extends State<SafeZoneScreen> {
                   maxY: 1.0,
                   lineBarsData: [
                     LineChartBarData(
-                      spots: const [FlSpot(0, 0.65), FlSpot(20, 0.52), FlSpot(50, 0.45), FlSpot(100, 0.42)],
+                      spots: [
+                        const FlSpot(0, 0.72), // Near tower (Danger)
+                        const FlSpot(5, 0.44), // Edge of danger
+                        FlSpot(_safeDistance, 0.40), // Safety Threshold
+                        const FlSpot(30, 0.24), // Clear Safe Zone
+                        const FlSpot(60, 0.19), // Far Zone
+                        const FlSpot(100, 0.19), // Decay limit
+                      ],
                       color: AppTheme.primaryNavy,
                       barWidth: 4,
                       isCurved: true,

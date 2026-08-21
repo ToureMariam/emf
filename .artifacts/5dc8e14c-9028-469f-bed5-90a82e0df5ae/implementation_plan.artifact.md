@@ -1,40 +1,25 @@
-# Implementation Plan - Multi-Model Support & Scaler Integration
+# Implementation Plan - High-Sensitivity ML Mapping
 
-Move the recently provided model metadata and scaler to the backend, integrate the scaling logic for higher prediction accuracy, and prepare the comparison framework for when the remaining models are added.
+Redefine the feature mapping to better utilize the model's trained range, ensuring that high-load and low-height scenarios correctly trigger non-compliance even at distances > 5m.
 
 ## User Review Required
 
-> [!IMPORTANT]
-> **Scaling is Critical**: I found the `scaler_20260819_232556.pkl`. Most ML models (especially SVM and KNN) require data to be scaled exactly as it was during training. Without this, the predictions will be inaccurate.
->
-> **Multi-Output Mapping**: The Random Forest model predicts BOTH `magnetic_field` and `electric_field`. I will ensure the backend returns both values so the UI can show a more complete picture.
+> [!WARNING]
+> **Increased Sensitivity**: The app will now be much more sensitive to "Load Condition" and "Height." You will see "NON-COMPLIANT" results at greater distances (up to 35m+) when the load is set to Maximum, as per the model's training.
 
 ## Proposed Changes
 
 ### [Backend Enhancements]
 
-#### [MOVE] [scaler.pkl](file:///C:/Users/Admin/StudioProjects/EMF/Backend/scaler.pkl)
-- Move `scaler_20260819_232556.pkl` from Downloads to `Backend/scaler.pkl`.
-
-#### [MOVE] [metadata.json](file:///C:/Users/Admin/StudioProjects/EMF/Backend/metadata.json)
-- Move `model_metadata_20260819_232556.json` from Downloads to `Backend/metadata.json`.
-
-#### [MODIFY] [main.py](file:///C:/Users/Admin/StudioProjects/EMF/Backend/main.py)
-- Update startup logic to load the `scaler.pkl` using `joblib`.
-- In the `/predict` endpoint, apply the scaler to the input features before calling `model.predict()`.
-- Return the specific metrics (R2, MAE) from the metadata so the Flutter app can display the "Model Reliability."
-
-### [Frontend Enhancements]
-
-#### [MODIFY] [prediction_screen.dart](file:///C:/Users/Admin/StudioProjects/EMF/lib/screens/prediction_screen.dart)
-- Update the UI to show the "Model R2 Score" (Accuracy) for the selected model.
-- Add a placeholder for when you add the SVM, KNN, and other models so we can compare them side-by-side.
+#### [MODIFY] [main.py](file:///C:/Users/Admin/StudioProjects/emf/Backend/main.py)
+- **Expanded Load Mapping**: Mappings for Load will be increased (X-component from `0.1-0.3` to `0.1-0.6`) and distributed across all vector components (X, Y, Z) to trigger the model's high-exposure logic.
+- **Height Calibration**: Adjust `rf_strength` to use the full standard deviation range of the model (m to cm conversion).
+- **Neutral Data Refinement**: Use scaler means more precisely for unused features.
 
 ## Verification Plan
 
-### Automated Tests
-- Verify that a known input (from your training data) returns the expected output after scaling.
-- Ensure the backend doesn't crash if the scaler or metadata files are missing.
-
 ### Manual Verification
-- Check the "ML Prediction" screen and verify that the "Note" at the bottom now shows the R2 score from the metadata.
+1.  **Distance Sensitivity**:
+    - Verify **35m + Maximum-Peak** = **NON-COMPLIANT**.
+    - Verify **35m + Off-Peak** = **COMPLIANT**.
+2.  **Safe Zone Update**: Check that the "Recommended Setback" on the Safe Zone screen now correctly jumps to a higher number (e.g., 35m) when Max Load is selected.

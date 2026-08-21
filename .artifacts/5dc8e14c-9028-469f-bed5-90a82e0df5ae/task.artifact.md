@@ -1,7 +1,13 @@
-- [x] Fix Backend dependency warnings (pin scikit-learn to 1.6.1)
-- [x] Create Flutter `ApiService` for backend communication
-- [x] Fix missing imports in `prediction_screen.dart`
-- [x] Enable Android Internet & Cleartext permissions
-- [x] Fix CORS policy & Web localhost mapping
-- [x] Handle Multi-output Regressor prediction in backend
-- [/] Verify Flutter-Backend connection (Ready to test again)
+# Tasks - High-Sensitivity ML Mapping
+
+- [x] **Research & Planning**
+    - [x] Analyze feature sensitivity (X, Y, Z components)
+    - [x] Create High-Sensitivity implementation plan
+- [x] **Backend Implementation**
+    - [x] Implement Expanded Load Mapping in `main.py`
+    - [x] Update `/predict` and `/safe-zone` endpoints
+- [x] **Verification**
+    - [x] Run sensitive verification script
+    - [x] Confirm "NON-COMPLIANT" state at 35m with Max Load
+- [x] **Documentation**
+    - [x] Update Walkthrough artifact
