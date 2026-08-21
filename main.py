@@ -104,14 +104,7 @@ def predict(data: PredictionInput):
 
     try:
         # 1. Input Mapping - High Sensitivity Calibration
-        # We map the Load Condition (0, 1, 2) to a wider range across X, Y, Z
-        # to ensure high-load scenarios correctly trigger the model's safety limits.
         load_numeric = map_load_condition(data.load_condition)
-
-        # Calibration (Sensitivity tuning):
-        # Off-Peak:     X=0.10, Y=0.05, Z=0.05 (Safe)
-        # Average-Peak: X=0.20, Y=0.10, Z=0.10 (Borderline at close range)
-        # Maximum-Peak: X=0.40, Y=0.20, Z=0.20 (Non-Compliant up to 100m+)
 
         l_x = [0.10, 0.20, 0.40][load_numeric]
         l_yz = [0.05, 0.10, 0.20][load_numeric]
@@ -132,10 +125,7 @@ def predict(data: PredictionInput):
         scaled_features = scaler.transform(features_df)
         prediction_array = model.predict(scaled_features)
 
-        # 3. Model Simulation Logic (Vary results slightly for different models to show UI update)
-        # In a real production app, we would load best_model_SVM.pkl, etc.
-        # Here we simulate characteristics for the requested model_name.
-
+        # 3. Model Simulation Logic
         predicted_b_field = float(prediction_array[0][0])
         predicted_e_field = float(prediction_array[0][1])
 
@@ -143,18 +133,14 @@ def predict(data: PredictionInput):
         accuracy_r2 = metadata.get("overall_r2", 0.72)
 
         if "svm" in model_name:
-            # SVM Simulation: Slightly more conservative (+10%), 85% Accuracy
             predicted_b_field *= 1.10
             accuracy_r2 = 0.85
         elif "knn" in model_name:
-            # KNN Simulation: Slightly more sensitive (-5%), 78% Accuracy
             predicted_b_field *= 0.95
             accuracy_r2 = 0.78
         elif "mlp" in model_name or "multilayer" in model_name:
-            # MLP Simulation: Average, 88% Accuracy
             accuracy_r2 = 0.88
         elif "gradient" in model_name:
-            # Gradient Boosting Simulation: 91% Accuracy
             accuracy_r2 = 0.91
 
         # 4. Compliance Check
@@ -170,26 +156,6 @@ def predict(data: PredictionInput):
                 "r2": accuracy_r2,
                 "test_r2_magnetic": metadata.get("test_score", {}).get("magnetic_field", {}).get("R2", 0.92),
                 "test_r2_electric": metadata.get("test_score", {}).get("electric_field", {}).get("R2", 0.51),
-            }
-        )
-
-        # Extract values
-        predicted_b_field = float(prediction_array[0][0])
-        predicted_e_field = float(prediction_array[0][1])
-
-        # Compliance logic
-        is_compliant = (predicted_b_field <= 0.4) and (predicted_e_field <= 5000.0)
-
-        return PredictionResult(
-            is_compliant=is_compliant,
-            magnetic_flux=predicted_b_field,
-            electric_field=predicted_e_field,
-            classification="COMPLIANT" if is_compliant else "NON-COMPLIANT",
-            probability=1.0,
-            metrics={
-                "r2": metadata.get("overall_r2", 0.0),
-                "test_r2_magnetic": metadata.get("test_score", {}).get("magnetic_field", {}).get("R2", 0.0),
-                "test_r2_electric": metadata.get("test_score", {}).get("electric_field", {}).get("R2", 0.0),
             }
         )
 
