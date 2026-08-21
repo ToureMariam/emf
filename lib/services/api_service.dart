@@ -4,9 +4,15 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' show Platform;
 
 class ApiService {
-  // Use 10.0.2.2 for Android Emulator, localhost for others
+  // 1. REPLACE THIS with your public backend URL after you deploy to Render/Railway
+  // Example: 'https://emf-backend.onrender.com'
+  static const String _publicBaseUrl = 'https://emf-1.onrender.com';
+
   static String get baseUrl {
-    if (kIsWeb) return 'http://127.0.0.1:8000';
+    if (kIsWeb) {
+      // If we are running on Netlify, use the public URL
+      return _publicBaseUrl;
+    }
     try {
       if (Platform.isAndroid) return 'http://10.0.2.2:8000';
     } catch (_) {}
