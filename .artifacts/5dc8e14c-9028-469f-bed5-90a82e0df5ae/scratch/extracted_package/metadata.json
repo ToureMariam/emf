@@ -1,0 +1,30 @@
+{
+    "model_name": "Random Forest",
+    "overall_r2": 0.719679631529667,
+    "features": [
+        "distance",
+        "rf_strength",
+        "x_component",
+        "y_component",
+        "z_component"
+    ],
+    "targets": [
+        "magnetic_field",
+        "electric_field"
+    ],
+    "timestamp": "20260819_232556",
+    "training_date": "2026-08-19 23:25:57",
+    "model_type": "RandomForestRegressor",
+    "test_score": {
+        "magnetic_field": {
+            "MAE": 0.015441289343775744,
+            "RMSE": 0.02599052427866231,
+            "R2": 0.9290629214041172
+        },
+        "electric_field": {
+            "MAE": 1.8974691197244071,
+            "RMSE": 3.6340293145554585,
+            "R2": 0.5102963416552166
+        }
+    }
+}
